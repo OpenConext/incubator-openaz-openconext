@@ -149,6 +149,13 @@ public class JSONResponse {
      * DataTypeFactory
      */
     private static DataTypeFactory dataTypeFactory = null;
+    private static ObjectMapper mapper = new ObjectMapper().setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+    private static ObjectMapper prettyMapper = new ObjectMapper().setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+    static {
+        prettyMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+    }
+
+
 
     protected JSONResponse() {
     }
@@ -1688,10 +1695,8 @@ public class JSONResponse {
         //
         // Create a string buffer
         //
-        ObjectMapper mapper = new ObjectMapper().setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-        mapper.configure(SerializationFeature.INDENT_OUTPUT, prettyPrint);
         try (OutputStreamWriter osw = new OutputStreamWriter(outputStream)) {
-            json = mapper.writeValueAsString(theWholeResponse);
+            json = prettyPrint ? prettyMapper.writeValueAsString(theWholeResponse) : mapper.writeValueAsString(theWholeResponse) ;
 
             osw.write(json);
 
