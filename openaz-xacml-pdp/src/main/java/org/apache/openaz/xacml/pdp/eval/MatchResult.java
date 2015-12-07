@@ -31,8 +31,12 @@
 
 package org.apache.openaz.xacml.pdp.eval;
 
+import org.apache.openaz.xacml.api.AttributeCategory;
 import org.apache.openaz.xacml.api.Status;
 import org.apache.openaz.xacml.std.StdStatus;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * MatchResult is the value returned by the {@link Matchable} interface.
@@ -49,10 +53,17 @@ public class MatchResult {
 
     private MatchCode matchCode;
     private Status status;
+    private Collection<AttributeCategory> matchedAttributeCategories;
 
     public MatchResult(MatchCode matchCodeIn, Status statusIn) {
         this.matchCode = matchCodeIn;
         this.status = statusIn;
+    }
+
+    public MatchResult(MatchCode matchCodeIn, Status statusIn, Collection<AttributeCategory> matchedAttributeCategories) {
+        this.matchCode = matchCodeIn;
+        this.status = statusIn;
+        this.matchedAttributeCategories = matchedAttributeCategories;
     }
 
     public MatchResult(MatchCode matchCodeIn) {
@@ -69,6 +80,20 @@ public class MatchResult {
 
     public Status getStatus() {
         return this.status;
+    }
+
+    public Collection<AttributeCategory> getMatchedAttributeCategories() {
+        return matchedAttributeCategories;
+    }
+
+    public void addMatchedAttributeCategory(Collection<AttributeCategory> matchedAttributeCategories) {
+        if (matchedAttributeCategories == null) {
+            return;
+        }
+        if (this.matchedAttributeCategories == null) {
+            this.matchedAttributeCategories = new ArrayList<>();
+        }
+        this.matchedAttributeCategories.addAll(matchedAttributeCategories);
     }
 
     @Override

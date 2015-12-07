@@ -30,20 +30,17 @@
  */
 package org.apache.openaz.xacml.pdp.policy;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
-import org.apache.openaz.xacml.api.AttributeValue;
-import org.apache.openaz.xacml.api.DataTypeException;
-import org.apache.openaz.xacml.api.Identifier;
-import org.apache.openaz.xacml.api.StatusCode;
-import org.apache.openaz.xacml.api.XACML;
+import org.apache.openaz.xacml.api.*;
 import org.apache.openaz.xacml.pdp.eval.EvaluationContext;
 import org.apache.openaz.xacml.pdp.eval.EvaluationException;
 import org.apache.openaz.xacml.pdp.eval.MatchResult;
 import org.apache.openaz.xacml.pdp.eval.Matchable;
+import org.apache.openaz.xacml.pdp.policy.expressions.AttributeDesignator;
 import org.apache.openaz.xacml.pdp.policy.expressions.AttributeRetrievalBase;
+import org.apache.openaz.xacml.std.StdMutableAttribute;
+import org.apache.openaz.xacml.std.StdMutableAttributeCategory;
 import org.apache.openaz.xacml.std.StdStatus;
 import org.apache.openaz.xacml.std.StdStatusCode;
 import org.apache.openaz.xacml.std.datatypes.DataTypes;
@@ -188,12 +185,11 @@ public class Match extends PolicyComponent implements Matchable {
                 Iterator<AttributeValue<?>> iterAttributeValues = bagAttributeValues.getAttributeValues();
                 while (matchResult.getMatchCode() != MatchResult.MatchCode.MATCH
                        && iterAttributeValues.hasNext()) {
+                    AttributeValue<?> value = iterAttributeValues.next();
                     MatchResult matchResultValue = match(evaluationContext,
                                                          functionDefinitionMatch,
                                                          functionArgument1,
-                                                         new FunctionArgumentAttributeValue(
-                                                                                            iterAttributeValues
-                                                                                                .next()));
+                                                         new FunctionArgumentAttributeValue(value));
                     switch (matchResultValue.getMatchCode()) {
                     case INDETERMINATE:
                         if (matchResult.getMatchCode() != MatchResult.MatchCode.INDETERMINATE) {
@@ -201,7 +197,7 @@ public class Match extends PolicyComponent implements Matchable {
                         }
                         break;
                     case MATCH:
-                        matchResult = matchResultValue;
+                        matchResult = new MatchResult(matchResultValue.getMatchCode(), matchResultValue.getStatus(), Arrays.asList(matchAttributeCategory(value)));
                         break;
                     case NOMATCH:
                         break;
@@ -222,6 +218,19 @@ public class Match extends PolicyComponent implements Matchable {
             return match(evaluationContext, functionDefinitionMatch, functionArgument1,
                          new FunctionArgumentAttributeValue(attributeValueExpressionResult));
         }
+    }
+
+    private AttributeCategory matchAttributeCategory(AttributeValue<?> value) {
+        AttributeCategory attributeCategory = null;
+        if (this.attributeRetrievalBase != null && this.attributeRetrievalBase instanceof AttributeDesignator) {
+            AttributeDesignator attributeDesignator = (AttributeDesignator) this.attributeRetrievalBase;
+            Identifier identifier = attributeDesignator.getAttributeId();
+            List<AttributeValue<?>> attributeValues = new ArrayList<>();
+            attributeValues.add(value);
+            Attribute attribute = new StdMutableAttribute(identifier,identifier, attributeValues,attributeDesignator.getIssuer(),true);
+            attributeCategory = new StdMutableAttributeCategory(identifier, Arrays.asList(attribute));
+        }
+        return attributeCategory;
     }
 
     @Override

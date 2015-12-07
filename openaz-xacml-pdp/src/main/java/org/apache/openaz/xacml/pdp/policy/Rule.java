@@ -30,16 +30,9 @@
  */
 package org.apache.openaz.xacml.pdp.policy;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
-import org.apache.openaz.xacml.api.Advice;
-import org.apache.openaz.xacml.api.Decision;
-import org.apache.openaz.xacml.api.Obligation;
-import org.apache.openaz.xacml.api.Result;
-import org.apache.openaz.xacml.api.StatusCode;
+import org.apache.openaz.xacml.api.*;
 import org.apache.openaz.xacml.api.trace.Traceable;
 import org.apache.openaz.xacml.pdp.eval.Evaluatable;
 import org.apache.openaz.xacml.pdp.eval.EvaluationContext;
@@ -232,8 +225,12 @@ public class Rule extends PolicyComponent implements Matchable, Evaluatable, Tra
         List<Advice> listAdvices = AdviceExpression.evaluate(evaluationContext, this.getPolicy()
             .getPolicyDefaults(), this.getRuleEffect().getDecision(), this.getAdviceExpressionList());
 
+
+      Collection<AttributeCategory> matchedAttributeCategories = matchResult.getMatchedAttributeCategories();
         EvaluationResult evaluationResult = new EvaluationResult(this.getRuleEffect().getDecision(),
-                                                                 listObligations, listAdvices);
+                                                                 listObligations,
+                                                                 listAdvices,
+                                                                 matchedAttributeCategories, null, null);
         if (evaluationContext.isTracing()) {
             evaluationContext.trace(new StdTraceEvent<Result>("Result", this, evaluationResult));
         }
