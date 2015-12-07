@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.openaz</groupId>
     <artifactId>openaz</artifactId>
-    <version>0.0.2-OPENCONEXT</version>
+    <version>0.0.3-OPENCONEXT</version>
     <packaging>pom</packaging>
     <name>Apache OpenAz</name>
     <description>Apache OpenAz Parent Project</description>
