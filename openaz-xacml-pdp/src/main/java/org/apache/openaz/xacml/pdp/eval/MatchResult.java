@@ -35,7 +35,6 @@ import org.apache.openaz.xacml.api.AttributeCategory;
 import org.apache.openaz.xacml.api.Status;
 import org.apache.openaz.xacml.std.StdStatus;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -86,14 +85,12 @@ public class MatchResult {
         return matchedAttributeCategories;
     }
 
-    public void addMatchedAttributeCategory(Collection<AttributeCategory> matchedAttributeCategories) {
-        if (matchedAttributeCategories == null) {
-            return;
+    public MatchResult addMatchedAttributeCategory(Collection<AttributeCategory> matchedAttributeCategories) {
+        if (matchedAttributeCategories == null || matchedAttributeCategories.size() == 0) {
+            return this;
         }
-        if (this.matchedAttributeCategories == null) {
-            this.matchedAttributeCategories = new ArrayList<>();
-        }
-        this.matchedAttributeCategories.addAll(matchedAttributeCategories);
+        //always make a copy cause otherwise it is not thread safe in combination with static MM_MATCH
+        return new MatchResult(this.matchCode, this.status, matchedAttributeCategories);
     }
 
     @Override
