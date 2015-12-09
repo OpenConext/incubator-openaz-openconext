@@ -116,7 +116,7 @@ public class AllOf extends PolicyComponent implements Matchable {
                 }
                 break;
             case MATCH:
-                matchResultFallThrough.addMatchedAttributeCategory(matchResultMatch.getMatchedAttributeCategories());
+                matchResultFallThrough = matchResultFallThrough.addMatchedAttributeCategory(matchResultMatch.getMatchedAttributeCategories());
                 break;
             case NOMATCH:
                 return matchResultMatch;
